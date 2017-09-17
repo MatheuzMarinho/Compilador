@@ -1,0 +1,11 @@
+int main () {
+    int a, b,c;
+    char a;
+    int d;
+    
+    a = 1 + 10 * 2 + 20 +10;
+    b = 1*2/3;
+    if(a+b>1)
+
+    
+}
