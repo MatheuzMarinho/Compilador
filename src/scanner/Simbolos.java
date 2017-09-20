@@ -142,7 +142,7 @@ public enum Simbolos {
 
     public static Boolean verificarFator(Simbolos s) {
 
-        return s.equals(Simbolos.TIPO_CHAR) || s.equals(Simbolos.TIPO_INTEIRO) || s.equals(Simbolos.TIPO_FLOAT) || s.equals(Simbolos.IDENTIFICADOR);
+        return s.equals(Simbolos.TIPO_CHAR) || s.equals(Simbolos.TIPO_INTEIRO) || s.equals(Simbolos.TIPO_FLOAT) || s.equals(Simbolos.IDENTIFICADOR)|| s.equals(Simbolos.ESP_ABRE_PARENTESES);
 
     }
 

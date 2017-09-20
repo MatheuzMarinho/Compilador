@@ -1,9 +1,12 @@
+/* -*- c-mode -*- */
+
 int main() {
-    int x,y,z;
+    int x,y,z,a;
     float h;int c;float w,k,a;
 
-    k = x;
-    w = 5/x+y*8+5* 7;
+    c = 'x'*'2';
+    x = y+w;
+    w = (5/x)+(((y)*8-5)* 7);
     /** /** /*
        teste &% 
     ***/
@@ -11,10 +14,10 @@ int main() {
 
      
     do{
-	
+        
         w = w + 1;
-	
-    }while  (y<10);
+        
+    }while  (y<10)
 
 
     y = x;
@@ -31,6 +34,7 @@ int main() {
     {
 
         p = 10;
-    }
+    }else
+        p = '1';
 
 }
