@@ -262,6 +262,8 @@ public class Scanner {
         if (this.la == -1) {
             arquivo.unread(0);
         } else {
+            if(this.la == 10)
+               controladorArquivo.setLinha(controladorArquivo.getLinha() - 1);    
             arquivo.unread(this.la);
         }
     }

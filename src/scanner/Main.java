@@ -14,8 +14,8 @@ import java.io.InputStreamReader;
 public class Main {
     
      public static void main(String[] args) throws FileNotFoundException, IOException, CompiladorException{
-        FileInputStream entrada = new FileInputStream(args[0]);
-        //FileInputStream entrada = new FileInputStream("arquivo.txt");
+        //FileInputStream entrada = new FileInputStream(args[0]);
+        FileInputStream entrada = new FileInputStream("arquivo.txt");
         InputStreamReader entradaFormatada = new InputStreamReader(entrada);
         Parser parser = new Parser(entradaFormatada);
           try {
