@@ -311,7 +311,7 @@ public class Parser {
             this.pegarProximoToken();
             tipoIdDois = this.verificaTermo();
             tipoIdUm = this.verificaTiposComOperacao(tipoIdUm, tipoIdDois, operacao);
-            this.expressaoAritmeticaLinha(tipoIdUm);
+            tipoIdUm = this.expressaoAritmeticaLinha(tipoIdUm);
         }
         return tipoIdUm;
     }

@@ -5,6 +5,7 @@
  */
 package scanner;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,8 +33,9 @@ public class SemanticoService {
     }
 
     public static Simbolos verificaSeDeclada(List<ItemTabela> tabela, Token token) throws CompiladorException {
-        Collections.reverse(tabela);
-        for (ItemTabela i :  tabela) {
+        List<ItemTabela> t =  new ArrayList<ItemTabela>(tabela);
+        Collections.reverse(t);
+        for (ItemTabela i :  t) {
             if (i.getLexema().equals(token.getLexema())) {
                 return i.getSimbolo();
             }
