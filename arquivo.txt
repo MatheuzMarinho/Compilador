@@ -1,24 +1,36 @@
 int main() {
     int x,y,z;
-    float w;
-    char c,d;
-    c = 'b';
-    w = 10 +10 *10-2.5 ;
-    c = 'a'+d / d;
-    w=y/z;
-    if(c>d){
-    int c;
-    w=w/w;
-    c = 10;
-    x = 20*20;
-    if(c>c){
-        float c;
-        c = 2.5;
-      }
+    float h;int c;float w,k,a,p;
+    
+    k = x;
+    w = 5/x+y*8+5* 7;
+    /** /** /*
+       teste &% 
+    ***/
+    
 
-      c = 2.5;
+     
+    do{
+	
+        w = w + 1;
+	
+    }while  (y<10);
+
+
+    y = x;
+    
+    while (x>w*8) {
+       float y,a;
+        w = w +1;
+        y = x;
     }
-    c = 's';
-    w = 10;
 
+    a = 0;
+
+    if (w != x) 
+    {
+        char p;
+        p = 'p';
+    }
+    p= 10 + 10 -5 + p * p/2 *10 + 15 -5;
 }
