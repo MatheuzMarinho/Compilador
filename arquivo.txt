@@ -2,35 +2,14 @@ int main() {
     int x,y,z;
     float h;int c;float w,k,a,p;
     
-    k = x;
-    w = 5/x+y*8+5* 7;
-    /** /** /*
-       teste &% 
-    ***/
-    
+    h = h/5 *2 +x;
+    x = 15+5*2;
 
-     
-    do{
-	
-        w = w + 1;
-	
-    }while  (y<10);
-
-
-    y = x;
-    
-    while (x>w*8) {
-       float y,a;
-        w = w +1;
-        y = x;
+    if(y+x>x){
+       int h;
+       h = h+20;
+    }else{
+        x= x+x;
+        h = x+x;
     }
-
-    a = 0;
-
-    if (w != x) 
-    {
-        char p;
-        p = 'p';
-    }
-    p= 10 + 10 -5 + p * p/2 *10 + 15 -5;
 }

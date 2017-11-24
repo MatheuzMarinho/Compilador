@@ -96,6 +96,38 @@ public enum Simbolos {
         return null;
     }
 
+    public static String converteOperadores(Simbolos s) {
+        switch (s) {
+            case OP_ARITMETICO_MAIS:
+                return "+";
+            case OP_ARITMETICO_MENOS:
+                return "-";
+            case OP_ARITMETICO_BARRA:
+                return "/";
+            default:
+                return "*";
+        }
+    }
+
+    public static String converteRelacionais(Simbolos s) {
+        switch (s) {
+            case OP_RELACIONAL_COMPARACAO:
+                return "==";
+            case OP_RELACIONAL_DIFERENTE:
+                return "!=";
+            case OP_RELACIONAL_MAIOR:
+                return ">";
+            case OP_RELACIONAL_MAIOR_IGUAL:
+                return ">=";
+            case OP_RELACIONAL_MENOR:
+                return "<";
+            case OP_RELACIONAL_MENOR_IGUAL:
+                return "<=";
+            default:
+                return "";
+        }
+    }
+
     public static Simbolos verificarEspeciais(char c) {
         String lexema = "" + c;
         switch (lexema) {
@@ -142,7 +174,7 @@ public enum Simbolos {
 
     public static Boolean verificarFator(Simbolos s) {
 
-        return s.equals(Simbolos.TIPO_CHAR) || s.equals(Simbolos.TIPO_INTEIRO) || s.equals(Simbolos.TIPO_FLOAT) || s.equals(Simbolos.IDENTIFICADOR)|| s.equals(Simbolos.ESP_ABRE_PARENTESES);
+        return s.equals(Simbolos.TIPO_CHAR) || s.equals(Simbolos.TIPO_INTEIRO) || s.equals(Simbolos.TIPO_FLOAT) || s.equals(Simbolos.IDENTIFICADOR) || s.equals(Simbolos.ESP_ABRE_PARENTESES);
 
     }
 
@@ -157,9 +189,9 @@ public enum Simbolos {
         return s.equals(Simbolos.OP_ARITMETICO_MAIS) || s.equals(Simbolos.OP_ARITMETICO_MENOS);
 
     }
-    
-    public static Boolean verificarRelacional(Simbolos s){
-       return s.equals(Simbolos.OP_RELACIONAL_COMPARACAO) || s.equals(Simbolos.OP_RELACIONAL_DIFERENTE)|| s.equals(Simbolos.OP_RELACIONAL_MAIOR)|| s.equals(Simbolos.OP_RELACIONAL_MAIOR_IGUAL)|| s.equals(Simbolos.OP_RELACIONAL_MENOR)|| s.equals(Simbolos.OP_RELACIONAL_MENOR_IGUAL); 
+
+    public static Boolean verificarRelacional(Simbolos s) {
+        return s.equals(Simbolos.OP_RELACIONAL_COMPARACAO) || s.equals(Simbolos.OP_RELACIONAL_DIFERENTE) || s.equals(Simbolos.OP_RELACIONAL_MAIOR) || s.equals(Simbolos.OP_RELACIONAL_MAIOR_IGUAL) || s.equals(Simbolos.OP_RELACIONAL_MENOR) || s.equals(Simbolos.OP_RELACIONAL_MENOR_IGUAL);
     }
 
 }

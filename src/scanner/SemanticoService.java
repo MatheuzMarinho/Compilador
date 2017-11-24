@@ -32,24 +32,25 @@ public class SemanticoService {
         return true;
     }
 
-    public static Simbolos verificaSeDeclada(List<ItemTabela> tabela, Token token) throws CompiladorException {
+    public static Token verificaSeDeclada(List<ItemTabela> tabela, Token token) throws CompiladorException {
         if (token.getSimbolo().equals(Simbolos.IDENTIFICADOR)) {
             List<ItemTabela> t = new ArrayList<ItemTabela>(tabela);
             Collections.reverse(t);
             for (ItemTabela i : t) {
                 if (i.getLexema().equals(token.getLexema())) {
-                    return i.getSimbolo();
+                    token.setSimbolo(i.getSimbolo());
+                    return token;
                 }
             }
         } else {
             if (isInt(token.getLexema())) {
-                return Simbolos.TIPO_INTEIRO;
+                return token;
             }
             if (isFloat(token.getLexema())) {
-                return Simbolos.TIPO_FLOAT;
+                return token;
             }
             if (token.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
-                return Simbolos.TIPO_CHAR;
+                return token;
             }
         }
 
@@ -82,12 +83,12 @@ public class SemanticoService {
         });
     }
 
-    public static void verificaExpressaoRelacional(Simbolos opUm, Simbolos opDois) throws CompiladorException, CompiladorException {
+    public static void verificaExpressaoRelacional(Token opUm, Token opDois) throws CompiladorException, CompiladorException {
 
-        if (opUm.equals(opDois)) {
+        if (opUm.getSimbolo().equals(opDois.getSimbolo())) {
 
         } else {
-            if (opUm.equals(Simbolos.TIPO_CHAR) || opDois.equals(Simbolos.TIPO_CHAR)) {
+            if (opUm.getSimbolo().equals(Simbolos.TIPO_CHAR) || opDois.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
                 throw new CompiladorException("Tipo dos identificadores diferentes. CHAR só faz operação com CHAR");
             }
         }

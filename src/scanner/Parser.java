@@ -23,12 +23,14 @@ public class Parser {
     private Token token;
     private int escopo;
     private final List<ItemTabela> tabela;
+    private int registrador;
 
     public Parser(InputStreamReader entradaFormatada) {
         this.scanner = new Scanner();
         this.arquivo = new PushbackReader(entradaFormatada);
         this.tabela = new ArrayList<>();
         this.escopo = 0;
+        this.registrador = 0;
     }
 
     public Scanner getScanner() {
@@ -113,8 +115,8 @@ public class Parser {
         }
 
     }
-    
-    public Simbolos converteSimboloDeclaracao(Simbolos simboloDeclaracao){
+
+    public Simbolos converteSimboloDeclaracao(Simbolos simboloDeclaracao) {
         switch (simboloDeclaracao) {
             case PR_CHAR:
                 return Simbolos.TIPO_CHAR;
@@ -230,12 +232,19 @@ public class Parser {
             this.expressaoRelacional();
             if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
                 this.pegarProximoToken();
+                System.out.println("if T[" + registrador + "] == 0 goto L1 ");
                 if (this.declararComando()) {
                     if (this.token.getSimbolo().equals(Simbolos.PR_ELSE)) {
+                        System.out.println("goto L2");
+                        System.out.println("L1: ");
                         this.pegarProximoToken();
                         if (!this.declararComando()) {
                             throw new CompiladorException("ERRO. Precisa existir um comando apos o ELSE. Encontrou um " + this.token.getSimbolo().toString());
                         }
+                        System.out.println("L2: ");
+                    } else {
+
+                        System.out.println("L1: ");
                     }
                 } else {
                     throw new CompiladorException("ERRO. Precisa existir um comando apos a Expressao Relacional. Encontrou um " + this.token.getSimbolo().toString());
@@ -250,12 +259,16 @@ public class Parser {
     }
 
     public void expressaoRelacional() throws CompiladorException, IOException {
-        Simbolos tipoIdUm, tipoIdDois;
+        Token tipoIdUm, tipoIdDois;
+        Simbolos relacional;
         tipoIdUm = this.expressaoAritmetica();
         this.operadorRelacional();
+        relacional = this.token.getSimbolo();
         this.pegarProximoToken();
         tipoIdDois = this.expressaoAritmetica();
         SemanticoService.verificaExpressaoRelacional(tipoIdUm, tipoIdDois);
+        registrador++;
+        System.out.println("T[" + registrador + "] = " + tipoIdUm.getLexema() + " " + Simbolos.converteRelacionais(relacional) + " " + tipoIdDois.getLexema());
     }
 
     public void operadorRelacional() throws CompiladorException {
@@ -265,21 +278,25 @@ public class Parser {
     }
 
     public void atribuicao() throws CompiladorException, IOException {
-        Simbolos tipoIdUm, tipoIdDois;
+        Token tipoIdUm, tipoIdDois;
         if (this.token.getSimbolo().equals(Simbolos.IDENTIFICADOR)) {
             tipoIdUm = SemanticoService.verificaSeDeclada(tabela, this.token);
             this.pegarProximoToken();
             if (this.token.getSimbolo().equals(Simbolos.OP_ARITMETICO_IGUAL)) {
                 this.pegarProximoToken();
                 tipoIdDois = this.expressaoAritmetica();
-                if (tipoIdUm.equals(tipoIdDois)) {
-
+                if (tipoIdUm.getSimbolo().equals(tipoIdDois.getSimbolo())) {
+                    System.out.println(tipoIdUm.getLexema() + " = " + tipoIdDois.getLexema());
                 } else {
-                    if (tipoIdUm.equals(Simbolos.TIPO_CHAR) || tipoIdDois.equals(Simbolos.TIPO_CHAR)) {
+                    if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_CHAR) || tipoIdDois.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
                         throw new CompiladorException("Tipo dos identificadores diferentes. CHAR recebe ou atribui somente com CHAR");
-                    }else if(tipoIdUm.equals(Simbolos.TIPO_INTEIRO)){
+                    } else if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_INTEIRO)) {
                         throw new CompiladorException("Tipo dos identificadores diferentes. INT não recebe FLOAT");
-                    }          
+                    } else {
+                        registrador++;
+                        System.out.println("T[" + registrador + "] = (float) " + tipoIdDois.getLexema());
+                        System.out.println(tipoIdUm.getLexema() + " = " + "T[" + registrador + "]");
+                    }
                 }
                 if (!this.token.getSimbolo().equals(Simbolos.ESP_PONTO_E_VIRGULA)) {
                     throw new CompiladorException("ERRO. O token esperado deve ser um PONTO E VIRGULA ou um OPERADOR ARITMETICO. Encontrou um " + this.token.getSimbolo().toString());
@@ -291,15 +308,16 @@ public class Parser {
         }
     }
 
-    public Simbolos expressaoAritmetica() throws CompiladorException, IOException {
-        Simbolos tipoIdUm;
+    public Token expressaoAritmetica() throws CompiladorException, IOException {
+        Token tipoIdUm;
         tipoIdUm = this.verificaTermo();
         tipoIdUm = this.expressaoAritmeticaLinha(tipoIdUm);
         return tipoIdUm;
     }
 
-    public Simbolos expressaoAritmeticaLinha(Simbolos tipoIdUm) throws CompiladorException, IOException {
-        Simbolos tipoIdDois, operacao;
+    public Token expressaoAritmeticaLinha(Token tipoIdUm) throws CompiladorException, IOException {
+        Token tipoIdDois;
+        Simbolos operacao;
         if (Simbolos.verificarAddSub(this.token.getSimbolo())) {
             operacao = this.token.getSimbolo();
             this.pegarProximoToken();
@@ -310,8 +328,9 @@ public class Parser {
         return tipoIdUm;
     }
 
-    public Simbolos verificaTermo() throws CompiladorException, IOException {
-        Simbolos tipoIdUm, tipoIdDois, operacao;
+    public Token verificaTermo() throws CompiladorException, IOException {
+        Token tipoIdUm, tipoIdDois;
+        Simbolos operacao;
 
         tipoIdUm = this.verificarFator();
         while (Simbolos.verificarMultDiv(this.token.getSimbolo())) {
@@ -324,27 +343,38 @@ public class Parser {
         return tipoIdUm;
     }
 
-    public Simbolos verificaTiposComOperacao(Simbolos tipoIdUm, Simbolos tipoIdDois, Simbolos operacao) throws CompiladorException {
-        if (tipoIdUm.equals(tipoIdDois)) {
-            if (tipoIdUm.equals(Simbolos.TIPO_CHAR)) {
-                return Simbolos.TIPO_CHAR;
-            } else if (tipoIdUm.equals(Simbolos.TIPO_FLOAT)) {
-                return Simbolos.TIPO_FLOAT;
-            } else if (tipoIdUm.equals(Simbolos.TIPO_INTEIRO) && operacao.equals(Simbolos.OP_ARITMETICO_BARRA)) {
-                return Simbolos.TIPO_FLOAT;
+    public Token verificaTiposComOperacao(Token tipoIdUm, Token tipoIdDois, Simbolos operacao) throws CompiladorException {
+        registrador++;
+        if (tipoIdUm.getSimbolo().equals(tipoIdDois.getSimbolo())) {
+            System.out.println("T[" + registrador + "] = " + tipoIdUm.getLexema() + " " + Simbolos.converteOperadores(operacao) + " " + tipoIdDois.getLexema());
+            if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
+                return new Token(Simbolos.TIPO_CHAR, "T[" + registrador + "]");
+            } else if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_FLOAT)) {
+                return new Token(Simbolos.TIPO_FLOAT, "T[" + registrador + "]");
+            } else if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_INTEIRO) && operacao.equals(Simbolos.OP_ARITMETICO_BARRA)) {
+                return new Token(Simbolos.TIPO_FLOAT, "T[" + registrador + "]");
             } else {
-                return Simbolos.TIPO_INTEIRO;
+                return new Token(Simbolos.TIPO_INTEIRO, "T[" + registrador + "]");
             }
         } else {
-            if (tipoIdUm.equals(Simbolos.TIPO_CHAR) || tipoIdDois.equals(Simbolos.TIPO_CHAR)) {
+            if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_CHAR) || tipoIdDois.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
                 throw new CompiladorException("Tipo dos identificadores diferentes. CHAR somente realiza operacoes com CHAR");
             } else {
-                return Simbolos.TIPO_FLOAT;
+                if (tipoIdUm.getSimbolo().equals(Simbolos.TIPO_INTEIRO)) {
+                    System.out.println("T[" + registrador + "] = (float) " + tipoIdUm.getLexema());
+                    System.out.println("T[" + (registrador + 1) + "] = T[" + registrador + "] " + Simbolos.converteOperadores(operacao) + " " + tipoIdDois.getLexema());
+                } else {
+                    System.out.println("T[" + registrador + "] = (float) " + tipoIdDois.getLexema());
+                    System.out.println("T[" + (registrador + 1) + "] = " + tipoIdUm.getLexema() + " " + Simbolos.converteOperadores(operacao) + " " + "T[" + registrador + "] ");
+                }
+                registrador++;
+
+                return new Token(Simbolos.TIPO_FLOAT, "T[" + registrador + "]");
             }
         }
     }
 
-    public Simbolos verificarFator() throws CompiladorException, IOException {
+    public Token verificarFator() throws CompiladorException, IOException {
         if (Simbolos.verificarFator(this.token.getSimbolo())) {
             if (this.token.getSimbolo().equals(Simbolos.ESP_ABRE_PARENTESES)) {
                 this.pegarProximoToken();
@@ -352,11 +382,11 @@ public class Parser {
                 if (!this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
                     throw new CompiladorException("ERRO. O token esperado deve ser um FECHA PARENTESES. Encontrou um " + this.token.getSimbolo().toString());
                 }
-                Simbolos s = SemanticoService.verificaSeDeclada(tabela, this.token);
+                Token s = SemanticoService.verificaSeDeclada(tabela, this.token);
                 this.pegarProximoToken();
                 return s;
             } else {
-                Simbolos s = SemanticoService.verificaSeDeclada(tabela, this.token);
+                Token s = SemanticoService.verificaSeDeclada(tabela, this.token);
                 this.pegarProximoToken();
                 return s;
             }
