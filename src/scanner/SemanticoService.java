@@ -83,13 +83,24 @@ public class SemanticoService {
         });
     }
 
-    public static void verificaExpressaoRelacional(Token opUm, Token opDois) throws CompiladorException, CompiladorException {
+    public static void verificaExpressaoRelacional(Token opUm, Token opDois, int registrador, Simbolos relacional) throws CompiladorException, CompiladorException {
 
         if (opUm.getSimbolo().equals(opDois.getSimbolo())) {
-
+            registrador++;
+            System.out.println("T[" + registrador + "] = " + opUm.getLexema() + " " + Simbolos.converteRelacionais(relacional) + " " + opDois.getLexema());
         } else {
             if (opUm.getSimbolo().equals(Simbolos.TIPO_CHAR) || opDois.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
                 throw new CompiladorException("Tipo dos identificadores diferentes. CHAR só faz operação com CHAR");
+            } else if (opUm.getSimbolo().equals(Simbolos.TIPO_INTEIRO)) {
+                registrador++;
+                System.out.println("T[" + registrador + "] = (float) " + opUm.getLexema());
+                registrador++;
+                System.out.println("T[" + registrador + "] = T[" + (registrador - 1) + "] " + Simbolos.converteRelacionais(relacional) + " " + opDois.getLexema());
+            } else {
+                registrador++;
+                System.out.println("T[" + registrador + "] = (float) " + opDois.getLexema());
+                registrador++;
+                System.out.println("T[" + registrador + "] = " + opUm.getLexema()+" " + Simbolos.converteRelacionais(relacional) + " T[" + (registrador-1)+"]");
             }
         }
 

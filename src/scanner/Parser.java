@@ -181,6 +181,7 @@ public class Parser {
 
     public void comandoDoWhile() throws CompiladorException, IOException {
         this.pegarProximoToken();
+        System.out.println("L0: ");
         if (this.declararComando()) {
             if (this.token.getSimbolo().equals(Simbolos.PR_WHILE)) {
                 this.pegarProximoToken();
@@ -188,6 +189,7 @@ public class Parser {
                     this.pegarProximoToken();
                     this.expressaoRelacional();
                     if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
+                        System.out.println("if T[" + registrador + "] != 0 goto L0 ");
                         this.pegarProximoToken();
                         if (!this.token.getSimbolo().equals(Simbolos.ESP_PONTO_E_VIRGULA)) {
                             throw new CompiladorException("ERRO. Esperava um PONTO E VIRGULA. Encontrou um " + this.token.getSimbolo().toString());
@@ -211,12 +213,16 @@ public class Parser {
         this.pegarProximoToken();
         if (this.token.getSimbolo().equals(Simbolos.ESP_ABRE_PARENTESES)) {
             this.pegarProximoToken();
+            System.out.println("L0: ");
             this.expressaoRelacional();
             if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
                 this.pegarProximoToken();
+                System.out.println("if T[" + registrador + "] == 0 goto L1 ");
                 if (!this.declararComando()) {
                     throw new CompiladorException("ERRO. Esperava um COMANDO. Encontrou um " + this.token.getSimbolo().toString());
                 }
+                System.out.println("goto L0 ");
+                System.out.println("L1: ");
             } else {
                 throw new CompiladorException("ERRO. O token esperado deve ser um FECHA PARENTESE. Encontrou um " + this.token.getSimbolo().toString());
             }
@@ -243,7 +249,6 @@ public class Parser {
                         }
                         System.out.println("L2: ");
                     } else {
-
                         System.out.println("L1: ");
                     }
                 } else {
@@ -266,9 +271,30 @@ public class Parser {
         relacional = this.token.getSimbolo();
         this.pegarProximoToken();
         tipoIdDois = this.expressaoAritmetica();
-        SemanticoService.verificaExpressaoRelacional(tipoIdUm, tipoIdDois);
-        registrador++;
-        System.out.println("T[" + registrador + "] = " + tipoIdUm.getLexema() + " " + Simbolos.converteRelacionais(relacional) + " " + tipoIdDois.getLexema());
+        this.verificaExpressaoRelacional(tipoIdUm, tipoIdDois,relacional);
+    }
+
+    public void verificaExpressaoRelacional(Token opUm, Token opDois, Simbolos relacional) throws CompiladorException, CompiladorException {
+
+        if (opUm.getSimbolo().equals(opDois.getSimbolo())) {
+            registrador++;
+            System.out.println("T[" + registrador + "] = " + opUm.getLexema() + " " + Simbolos.converteRelacionais(relacional) + " " + opDois.getLexema());
+        } else {
+            if (opUm.getSimbolo().equals(Simbolos.TIPO_CHAR) || opDois.getSimbolo().equals(Simbolos.TIPO_CHAR)) {
+                throw new CompiladorException("Tipo dos identificadores diferentes. CHAR só faz operação com CHAR");
+            } else if (opUm.getSimbolo().equals(Simbolos.TIPO_INTEIRO)) {
+                registrador++;
+                System.out.println("T[" + registrador + "] = (float) " + opUm.getLexema());
+                registrador++;
+                System.out.println("T[" + registrador + "] = T[" + (registrador - 1) + "] " + Simbolos.converteRelacionais(relacional) + " " + opDois.getLexema());
+            } else {
+                registrador++;
+                System.out.println("T[" + registrador + "] = (float) " + opDois.getLexema());
+                registrador++;
+                System.out.println("T[" + registrador + "] = " + opUm.getLexema() + " " + Simbolos.converteRelacionais(relacional) + " T[" + (registrador - 1) + "]");
+            }
+        }
+
     }
 
     public void operadorRelacional() throws CompiladorException {

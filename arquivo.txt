@@ -1,15 +1,8 @@
 int main() {
     int x,y,z;
     float h;int c;float w,k,a,p;
-    
-    h = h/5 *2 +x;
-    x = 15+5*2;
-
-    if(y+x>x){
-       int h;
-       h = h+20;
-    }else{
-        x= x+x;
-        h = x+x;
-    }
+  
+   do{
+    x = x+10;
+    }while(x>2.5);
 }
