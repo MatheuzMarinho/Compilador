@@ -1,8 +1,22 @@
 int main() {
     int x,y,z;
-    float h;int c;float w,k,a,p;
-  
+    float h;int c;float w,k,a,b,p;
+
+    if(a>b){
+     a = b; 
+    }else{
+    b = a; 
+    }
+    
+    if(x<y){
+      x = y;
+    }
+    
    do{
     x = x+10;
-    }while(x>2.5);
+    }while(x>2);
+
+    while(x>x){
+    x = x+x;
+    }
 }

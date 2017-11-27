@@ -24,6 +24,7 @@ public class Parser {
     private int escopo;
     private final List<ItemTabela> tabela;
     private int registrador;
+    private int label;
 
     public Parser(InputStreamReader entradaFormatada) {
         this.scanner = new Scanner();
@@ -31,6 +32,7 @@ public class Parser {
         this.tabela = new ArrayList<>();
         this.escopo = 0;
         this.registrador = 0;
+        this.label = 0;
     }
 
     public Scanner getScanner() {
@@ -181,7 +183,8 @@ public class Parser {
 
     public void comandoDoWhile() throws CompiladorException, IOException {
         this.pegarProximoToken();
-        System.out.println("L0: ");
+        System.out.println("L" + label + ":");
+        label++;
         if (this.declararComando()) {
             if (this.token.getSimbolo().equals(Simbolos.PR_WHILE)) {
                 this.pegarProximoToken();
@@ -189,7 +192,7 @@ public class Parser {
                     this.pegarProximoToken();
                     this.expressaoRelacional();
                     if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
-                        System.out.println("if T[" + registrador + "] != 0 goto L0 ");
+                        System.out.println("if T[" + registrador + "] != 0 goto L" + (label - 1));
                         this.pegarProximoToken();
                         if (!this.token.getSimbolo().equals(Simbolos.ESP_PONTO_E_VIRGULA)) {
                             throw new CompiladorException("ERRO. Esperava um PONTO E VIRGULA. Encontrou um " + this.token.getSimbolo().toString());
@@ -213,16 +216,18 @@ public class Parser {
         this.pegarProximoToken();
         if (this.token.getSimbolo().equals(Simbolos.ESP_ABRE_PARENTESES)) {
             this.pegarProximoToken();
-            System.out.println("L0: ");
+            System.out.println("L" + label + ":");
+            label++;
             this.expressaoRelacional();
             if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
                 this.pegarProximoToken();
-                System.out.println("if T[" + registrador + "] == 0 goto L1 ");
+                System.out.println("if T[" + registrador + "] == 0 goto L" + label);
                 if (!this.declararComando()) {
                     throw new CompiladorException("ERRO. Esperava um COMANDO. Encontrou um " + this.token.getSimbolo().toString());
                 }
-                System.out.println("goto L0 ");
-                System.out.println("L1: ");
+                System.out.println("goto L" + (label - 1));
+                System.out.println("L" + label + ":");
+                label++;
             } else {
                 throw new CompiladorException("ERRO. O token esperado deve ser um FECHA PARENTESE. Encontrou um " + this.token.getSimbolo().toString());
             }
@@ -238,18 +243,21 @@ public class Parser {
             this.expressaoRelacional();
             if (this.token.getSimbolo().equals(Simbolos.ESP_FECHA_PARENTESES)) {
                 this.pegarProximoToken();
-                System.out.println("if T[" + registrador + "] == 0 goto L1 ");
+                System.out.println("if T[" + registrador + "] == 0 goto L" + label);
                 if (this.declararComando()) {
                     if (this.token.getSimbolo().equals(Simbolos.PR_ELSE)) {
-                        System.out.println("goto L2");
-                        System.out.println("L1: ");
+                        System.out.println("goto L" + (label + 1));
+                        System.out.println("L" + label + ":");
+                        label++;
                         this.pegarProximoToken();
                         if (!this.declararComando()) {
                             throw new CompiladorException("ERRO. Precisa existir um comando apos o ELSE. Encontrou um " + this.token.getSimbolo().toString());
                         }
-                        System.out.println("L2: ");
+                        System.out.println("L" + label+":");
+                        label++;
                     } else {
-                        System.out.println("L1: ");
+                        System.out.println("L" + label + ":");
+                        label++;
                     }
                 } else {
                     throw new CompiladorException("ERRO. Precisa existir um comando apos a Expressao Relacional. Encontrou um " + this.token.getSimbolo().toString());
@@ -271,7 +279,7 @@ public class Parser {
         relacional = this.token.getSimbolo();
         this.pegarProximoToken();
         tipoIdDois = this.expressaoAritmetica();
-        this.verificaExpressaoRelacional(tipoIdUm, tipoIdDois,relacional);
+        this.verificaExpressaoRelacional(tipoIdUm, tipoIdDois, relacional);
     }
 
     public void verificaExpressaoRelacional(Token opUm, Token opDois, Simbolos relacional) throws CompiladorException, CompiladorException {
